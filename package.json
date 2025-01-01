@@ -20,5 +20,25 @@
   "peerDependencies": {
     "form-data": "4.0.1",
     "whatwg-url": "7.1.0"
+  },
+  "pluginType": "elizaos:plugin:1.0.0",
+  "pluginParameters": {
+    "type": "object",
+    "required": ["aptosPrivateKey", "aptosNetwork"],
+    "properties": {
+      "aptosPrivateKey": {
+        "type": "string",
+        "description": "Aptos private key"
+      },
+      "aptosNetwork": {
+        "type": "string",
+        "description": "Aptos network",
+        "enum": ["mainnet", "testnet"]
+      }
+    }
+  },
+  "pluginEnv": {
+    "APTOS_PRIVATE_KEY": "aptosPrivateKey",
+    "APTOS_NETWORK": "aptosNetwork"
   }
 }
