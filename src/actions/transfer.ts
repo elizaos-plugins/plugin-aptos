@@ -85,13 +85,19 @@ export default {
         return false;
     },
     description: "Transfer tokens from the agent's wallet to another address",
-    handler: async (
+    handler: async ({
+        runtime,
+        message,
+        state,
+        options: _options,
+        callback,
+    }: {
         runtime: IAgentRuntime,
         message: Memory,
         state: State,
-        _options: { [key: string]: unknown },
+        options: { [key: string]: unknown },
         callback?: HandlerCallback
-    ): Promise<boolean> => {
+    }): Promise<boolean> => {
         elizaLogger.log("Starting SEND_TOKEN handler...");
 
         const walletInfo = await walletProvider.get(runtime, message, state);
