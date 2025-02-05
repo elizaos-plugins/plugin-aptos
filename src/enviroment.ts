@@ -14,11 +14,9 @@ export async function validateAptosConfig(
     try {
         const config = {
             APTOS_PRIVATE_KEY:
-                runtime.getSetting("APTOS_PRIVATE_KEY") ||
-                process.env.APTOS_PRIVATE_KEY,
+                runtime.getSetting("APTOS_PRIVATE_KEY"),
             APTOS_NETWORK:
-                runtime.getSetting("APTOS_NETWORK") ||
-                process.env.APTOS_NETWORK,
+                runtime.getSetting("APTOS_NETWORK"),
         };
 
         return aptosEnvSchema.parse(config);

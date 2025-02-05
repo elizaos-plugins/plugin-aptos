@@ -1,10 +1,8 @@
-import type { Plugin } from "@elizaos/core";
-import transferToken from "./actions/transfer.ts";
-import { WalletProvider, walletProvider } from "./providers/wallet.ts";
+import transferToken from "./actions/transfer";
+import { walletProvider } from "./providers/wallet";
 
-export { WalletProvider, transferToken as TransferAptosToken };
 
-export const aptosPlugin: Plugin = {
+export const aptosPlugin = {
     name: "aptos",
     description: "Aptos Plugin for Eliza",
     actions: [transferToken],

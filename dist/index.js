@@ -40,10 +40,9 @@ var WalletProvider = class {
     this.aptosClient = aptosClient;
     this.address = address;
     this.cacheManager = cacheManager;
+    this.cacheKey = "aptos/wallet";
     this.cache = new NodeCache({ stdTTL: 300 });
   }
-  cache;
-  cacheKey = "aptos/wallet";
   async readFromCache(key) {
     const cached = await this.cacheManager.get(
       path.join(this.cacheKey, key)
@@ -380,8 +379,6 @@ var aptosPlugin = {
 };
 var index_default = aptosPlugin;
 export {
-  transfer_default as TransferAptosToken,
-  WalletProvider,
   aptosPlugin,
   index_default as default
 };
