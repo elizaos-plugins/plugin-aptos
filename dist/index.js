@@ -25,7 +25,7 @@ import {
 } from "@aptos-labs/ts-sdk";
 import BigNumber from "bignumber.js";
 import NodeCache from "node-cache";
-import * as path from "path";
+import * as path from "node:path";
 
 // src/constants.ts
 var APT_DECIMALS = 8;
@@ -91,9 +91,8 @@ var WalletProvider = class {
         console.error(`Attempt ${i + 1} failed:`, error);
         lastError = error;
         if (i < PROVIDER_CONFIG.MAX_RETRIES - 1) {
-          const delay = PROVIDER_CONFIG.RETRY_DELAY * Math.pow(2, i);
+          const delay = PROVIDER_CONFIG.RETRY_DELAY * 2 ** i;
           await new Promise((resolve) => setTimeout(resolve, delay));
-          continue;
         }
       }
     }
@@ -218,7 +217,11 @@ var walletProvider = {
 // src/actions/transfer.ts
 function isTransferContent(content) {
   elizaLogger.log("Content for transfer", content);
-  return typeof content.recipient === "string" && (typeof content.amount === "string" || typeof content.amount === "number");
+  if (typeof content !== "object" || content === null) {
+    return false;
+  }
+  const c = content;
+  return typeof c.recipient === "string" && (typeof c.amount === "string" || typeof c.amount === "number");
 }
 var transferTemplate = `Respond with a JSON markdown block containing only the extracted values. Use null for any values that cannot be determined.
 
@@ -246,7 +249,7 @@ var transfer_default = {
     "SEND_APT",
     "PAY"
   ],
-  validate: async (runtime, message) => {
+  validate: async (_runtime, message) => {
     elizaLogger.log("Validating apt transfer from user:", message.userId);
     return false;
   },
@@ -255,13 +258,14 @@ var transfer_default = {
     elizaLogger.log("Starting SEND_TOKEN handler...");
     const walletInfo = await walletProvider.get(runtime, message, state);
     state.walletInfo = walletInfo;
-    if (!state) {
-      state = await runtime.composeState(message);
+    let currentState = state;
+    if (!currentState) {
+      currentState = await runtime.composeState(message);
     } else {
-      state = await runtime.updateRecentMessageState(state);
+      currentState = await runtime.updateRecentMessageState(currentState);
     }
     const transferContext = composeContext({
-      state,
+      state: currentState,
       template: transferTemplate
     });
     const content = await generateObjectDeprecated({
@@ -297,7 +301,7 @@ var transfer_default = {
       );
       const APT_DECIMALS2 = 8;
       const adjustedAmount = BigInt(
-        Number(content.amount) * Math.pow(10, APT_DECIMALS2)
+        Number(content.amount) * 10 ** APT_DECIMALS2
       );
       elizaLogger.log(
         `Transferring: ${content.amount} tokens (${adjustedAmount} base units)`
